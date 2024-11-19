@@ -1,0 +1,155 @@
+/* Modern, attractive styling for Sudoku board */
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+
+#sudoku-board {
+  display: grid;
+  grid-template-columns: repeat(9, 50px);
+  grid-template-rows: repeat(9, 50px);
+  gap: 1px;
+  margin-top: 30px;
+  padding: 12px;
+  background: #2c3e50;
+  border-radius: 12px;
+  box-shadow: 
+    0 12px 24px rgba(0,0,0,0.2),
+    0 4px 8px rgba(0,0,0,0.1);
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  font-size: 20px;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid #e0e0e0;
+}
+
+.cell:hover {
+  background-color: #f0f7ff;
+  transform: scale(1.02);
+  z-index: 2;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.cell.empty {
+  background-color: #f8fafd;
+}
+
+.cell.fixed {
+  font-weight: 600;
+  color: #2c3e50;
+  background-color: #fff;
+}
+
+.cell.showing-domain::after {
+  content: attr(data-domain);
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #34495e;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  opacity: 0;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+.cell.domain-changed {
+  animation: highlight 1.5s ease;
+}
+
+@keyframes highlight {
+  0% { background-color: #fff; }
+  50% { 
+    background-color: #3498db;
+    color: white;
+    transform: scale(1.05);
+  }
+  100% { 
+    background-color: #fff;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* Fixed Grid styling */
+.cell[data-row="2"], 
+.cell[data-row="5"] {
+  border-bottom: 2px solid #2c3e50;
+}
+
+.cell[data-col="2"], 
+.cell[data-col="5"] {
+  border-right: 2px solid #2c3e50;
+}
+
+/* Remove default border for cells that have thick borders */
+.cell[data-col="2"],
+.cell[data-col="5"] {
+  border-right: 2px solid #2c3e50;
+  border-left: none;
+}
+
+.cell[data-row="2"],
+.cell[data-row="5"] {
+  border-bottom: 2px solid #2c3e50;
+  border-top: none;
+}
+
+/* Style for invalid input flash */
+@keyframes invalid {
+  0% { background-color: #fff; }
+  50% { background-color: #ff7675; }
+  100% { background-color: #fff; }
+}
+
+.cell.invalid {
+  animation: invalid 0.8s ease;
+}
+
+/* Add title styling */
+h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 600;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Add instruction text */
+.instructions {
+  color: #34495e;
+  text-align: center;
+  margin-bottom: 20px;
+  max-width: 600px;
+  line-height: 1.6;
+  background: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
