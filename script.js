@@ -2,31 +2,78 @@
 const boardElement = document.getElementById("sudoku-board");
 
 function initializeBoard() {
-  const board = [];
-  for (let row = 0; row < 9; row++) {
-    const rowArray = [];
-    for (let col = 0; col < 9; col++) {
-      const cell = {
-        value: null,
-        domain: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        isFixed: false  // Track if this is an initial value
-      };
-      rowArray.push(cell);
+  const board = Array.from({ length: 9 }, () => 
+    Array.from({ length: 9 }, () => ({
+      value: null,
+      domain: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      isFixed: false
+    }))
+  );
+
+  // Attempt to fill the board with a valid configuration
+  function isValidPlacement(board, row, col, num) {
+    // Check row
+    for (let x = 0; x < 9; x++) {
+      if (board[row][x].value === num) return false;
     }
-    board.push(rowArray);
+
+    // Check column
+    for (let x = 0; x < 9; x++) {
+      if (board[x][col].value === num) return false;
+    }
+
+    // Check 3x3 box
+    const startRow = Math.floor(row / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
+    for (let x = 0; x < 3; x++) {
+      for (let y = 0; y < 3; y++) {
+        if (board[startRow + x][startCol + y].value === num) return false;
+      }
+    }
+
+    return true;
   }
 
-  // Populate some cells with random values
+  function solveSudoku(board) {
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (board[row][col].value === null) {
+          // Shuffle numbers to create randomness
+          const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - 0.5);
+          for (let num of nums) {
+            if (isValidPlacement(board, row, col, num)) {
+              board[row][col].value = num;
+              board[row][col].domain = [num];
+              board[row][col].isFixed = true;
+
+              if (solveSudoku(board)) {
+                return true;
+              }
+
+              // Backtrack
+              board[row][col].value = null;
+              board[row][col].domain = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+              board[row][col].isFixed = false;
+            }
+          }
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  // Generate a full valid Sudoku board
+  solveSudoku(board);
+
+  // Remove some numbers to create a puzzle
+  const difficulty = 0.6; // Percent of cells to remove
   for (let row = 0; row < 9; row++) {
     for (let col = 0; col < 9; col++) {
-      const isPreFilled = Math.random() < 0.3;
-      if (isPreFilled) {
-        const value = getRandomValue(row, col, board);
-        if (value !== null) {
-          board[row][col].value = value;
-          board[row][col].domain = [value];
-          board[row][col].isFixed = true;
-        }
+      if (Math.random() < difficulty) {
+        board[row][col].value = null;
+        board[row][col].domain = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        board[row][col].isFixed = false;
       }
     }
   }
